@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -76,7 +74,7 @@ namespace WhereAmIWeak.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("NewUser", "Account", user.Id);
                 }
                 else
                 {
@@ -169,5 +167,18 @@ namespace WhereAmIWeak.Controllers
             }
         }
         #endregion
+
+	    public IActionResult NewUser(string userId)
+	    {
+		    var stravaClientId = "5741";
+		    var redirectUrl = Url.RouteUrl("NewUserResponse");
+		    var url = string.Format("https://www.strava.com/oauth/authorize?client_id={0}& response_type=code&redirect_uri={1}&scope=write&state=mystate&approval_prompt=force", stravaClientId, redirectUrl);
+		    return new RedirectResult(url);
+		}
+
+	    public IActionResult NewUserResponse()
+	    {
+		    throw new Exception();
+	    }
     }
 }
