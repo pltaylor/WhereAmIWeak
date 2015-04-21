@@ -3,6 +3,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Rendering;
 using WhereAmIWeak.Models;
 
 namespace WhereAmIWeak.Controllers
@@ -74,7 +75,7 @@ namespace WhereAmIWeak.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("NewUser", "Account", user.Id);
+                    return RedirectToAction("NewUser", "Account", new { userId = user.Id});
                 }
                 else
                 {
@@ -168,15 +169,15 @@ namespace WhereAmIWeak.Controllers
         }
         #endregion
 
-	    public IActionResult NewUser(string userId)
+	    public IActionResult NewUser(Guid userId)
 	    {
 		    var stravaClientId = "5741";
-		    var redirectUrl = Url.RouteUrl("NewUserResponse");
-		    var url = string.Format("https://www.strava.com/oauth/authorize?client_id={0}& response_type=code&redirect_uri={1}&scope=write&state=mystate&approval_prompt=force", stravaClientId, redirectUrl);
+			string redirectUrl = Url.Action("NewUserResponse", "Account", new { userId = userId }, Context.Request.Scheme, Context.Request.Host.Value);
+		    var url = string.Format("https://www.strava.com/oauth/authorize?client_id={0}&response_type=code&redirect_uri={1}&scope=write&state=mystate&approval_prompt=force", stravaClientId, redirectUrl);
 		    return new RedirectResult(url);
 		}
 
-	    public IActionResult NewUserResponse()
+	    public IActionResult NewUserResponse(Guid userId, string state, string code)
 	    {
 		    throw new Exception();
 	    }
